@@ -15,14 +15,14 @@ class Drums extends Component {
 
   startAudio = () => {
     this.setState({playing: true}, () => {
-      const drumSpace = new DrumSpace({
-        duration: 60
+      this.drumSpace = new DrumSpace({
+        duration: 60,
       });
-      drumSpace.addInstrument('kick', {interval: 16, delay: 15});
-      drumSpace.addInstrument('kick', {interval: 2, delay: 0});
-      drumSpace.addInstrument('snare', {interval: 8, delay: 4});
-      drumSpace.addInstrument('kick', {interval: 10, delay: 0, frequency: 300});
-      drumSpace.play();
+      this.drumSpace.addInstrument('kick', {interval: 16, delay: 15});
+      this.drumSpace.addInstrument('kick', {interval: 2, delay: 0});
+      this.drumSpace.addInstrument('snare', {interval: 8, delay: 4});
+      this.drumSpace.addInstrument('kick', {interval: 10, delay: 0, frequency: 300});
+      this.drumSpace.play();
     });
   }
 
@@ -33,13 +33,12 @@ class Drums extends Component {
   }
 
   render() {
-    return <button onClick={() => {
-      if (this.state.playing) {
-        this.stopAudio();
-      } else {
-        this.startAudio();
-      }
-    }}>{this.state.playing ? 'stop' : 'start'}</button>;
+    return (
+      <>
+        <button onClick={() => this.drumSpace.stop()}>stop</button>
+        <button onClick={() => this.drumSpace.play()}>play</button>
+      </>
+    );
   }
 }
 

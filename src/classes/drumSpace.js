@@ -76,6 +76,10 @@ class DrumSpace {
       delay: settings.delay/this.speed
     }));
   }
+
+  stop = () => {
+    this.context.close();
+  }
 }
 
 export default DrumSpace;
