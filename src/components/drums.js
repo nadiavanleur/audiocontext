@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Kick from '../classes/kick';
+import Snare from '../classes/snare';
 
 class Drums extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class Drums extends Component {
     this.setState({playing: true}, () => {
       this.audioContext = new AudioContext();
       this.cymbal = new Kick(this.audioContext, 100, 'cymbal');
-      this.snare = new Kick(this.audioContext, 200, 'snare');
+      this.snare = new Snare(this.audioContext, 200, 'snare');
       this.trap = new Kick(this.audioContext, 300, 'trap');
   
       // cymbal.play({ interval: 1.5, iterations: 1, delay: 1.5, duration: 30 });
@@ -28,10 +29,11 @@ class Drums extends Component {
       this.rythm = 16;
       this.bpm = 165;
       this.speed = this.bpm / this.rythm;
-      this.cymbal.play({ interval: 16/this.speed, duration: 60, delay: 15/this.speed });
-      this.cymbal.play({ interval: 2/this.speed, duration: 60, delay: 0 });
+      // this.cymbal.play({ interval: 16/this.speed, duration: 60, delay: 15/this.speed });
+      // this.cymbal.play({ interval: 2/this.speed, duration: 60, delay: 0 });
       this.snare.play({ interval: 8/this.speed, duration: 60, delay: 4/this.speed });
-      this.trap.play({ interval: 10/this.speed, duration: 60, delay: 0 });
+      // this.trap.play({ interval: 10/this.speed, duration: 60, delay: 0 });
+
     });
   }
 
