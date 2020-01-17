@@ -11,10 +11,10 @@ class Snare {
    * @param {trackDuration} [optional] duration of track in seconds
    * @param {volume} [optional] volume
    */
-  constructor(context, frequency = 150, name) {
+  constructor(context, name, settings) {
     this.context = context;
-    this.frequency = frequency;
-    this.name = name || `${frequency}Hz`;
+    this.setting = settings;
+    this.name = name || `Snare`;
   }
 
   /**
@@ -101,7 +101,7 @@ class Snare {
       this.trigger({start, soundDuration, volume});
     }
 
-    console.info(`Playing snare ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations*interval*2)} at an interval of ${interval}s`);
+    console.info(`Playing ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations*interval*2)} at an interval of ${interval}s`);
   }
 }
 

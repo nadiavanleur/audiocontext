@@ -1,19 +1,14 @@
 import {secondsToHHMMSS} from '../helpers/format';
 
 class Kick {
-  constructor(context, frequency = 150, name) {
+  constructor(context, name, settings = {
+    frequency: 150
+  }) {
     this.context = context;
-    this.frequency = frequency;
-    this.name = name || `${frequency}Hz`;
+    this.settings = settings;
+    this.name = name || `Kick ${settings.frequency}Hz`;
   }
 
-  /**
-   * setFrequency
-   * 
-   * @param frequency [required] new frequency
-   */
-  setFrequency = (frequency) => this.frequency = frequency;
-  
   /**
    * trigger
    * - Trigger kick once
@@ -32,7 +27,7 @@ class Kick {
     this.osc.connect(this.gain);
     this.gain.connect(this.context.destination);
 
-    this.osc.frequency.setValueAtTime(this.frequency, start);
+    this.osc.frequency.setValueAtTime(this.settings.frequency, start);
     this.gain.gain.setValueAtTime(volume, start);
     this.osc.frequency.exponentialRampToValueAtTime(0.01, start + duration);
     this.gain.gain.exponentialRampToValueAtTime(0.01, start + duration);
@@ -65,10 +60,10 @@ class Kick {
 
     for (let i = 0; i < actualIterations; i++) {
       const start = (i * interval) + delay || delay;
-      this.trigger(start, soundDutation, volume);
+      this.trigger({start, soundDutation, volume});
     }
 
-    console.info(`Playing kick ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations*interval*2)} at an interval of ${interval}s`);
+    console.info(`Playing ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations*interval*2)} at an interval of ${interval}s`);
   }
 }
 
