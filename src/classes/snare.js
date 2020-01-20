@@ -1,4 +1,4 @@
-import {secondsToHHMMSS} from '../helpers/format';
+import { secondsToHHMMSS } from '../helpers/format';
 
 class Snare {
   /**
@@ -11,9 +11,11 @@ class Snare {
    * @param {trackDuration} [optional] duration of track in seconds
    * @param {volume} [optional] volume
    */
-  constructor(context, name, settings) {
+  constructor(context, name, settings = {
+    output: false
+  }) {
     this.context = context;
-    this.setting = settings;
+    this.output = settings.output;
     this.name = name || `Snare`;
   }
 
@@ -25,12 +27,12 @@ class Snare {
     const bufferSize = this.context.sampleRate;
     const buffer = this.context.createBuffer(1, bufferSize, this.context.sampleRate);
     const output = buffer.getChannelData(0);
-  
+
     for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-  
+
     return buffer;
   };
-  
+
   /**
    * trigger
    * - Trigger snare once
@@ -42,16 +44,19 @@ class Snare {
   trigger = ({
     duration = .2,
     start = 0,
-    volume = 1
+    volume = .5
   } = {}) => {
+    // Create noise
     this.noise = this.context.createBufferSource();
     this.noise.buffer = this.noiseBuffer();
-    var noiseFilter = this.context.createBiquadFilter();
+    const noiseFilter = this.context.createBiquadFilter();
     noiseFilter.type = 'highpass';
     noiseFilter.frequency.value = 1000;
     this.noise.connect(noiseFilter);
     this.noiseEnvelope = this.context.createGain();
     noiseFilter.connect(this.noiseEnvelope);
+
+    // Create oscillator
     this.osc = this.context.createOscillator();
     this.osc.type = 'triangle';
     this.oscEnvelope = this.context.createGain();
@@ -60,17 +65,24 @@ class Snare {
 
     this.noiseEnvelope.connect(this.context.destination);
 
+    // Set variables for current trigger
     this.noiseEnvelope.gain.setValueAtTime(volume, start);
     this.noiseEnvelope.gain.exponentialRampToValueAtTime(0.01, start + duration);
-    this.noise.start(start)
-  
+
     this.osc.frequency.setValueAtTime(100, start);
     this.oscEnvelope.gain.setValueAtTime(0.7, start);
-    this.oscEnvelope.gain.exponentialRampToValueAtTime(0.01, start + duration/2);
+    this.oscEnvelope.gain.exponentialRampToValueAtTime(0.01, start + duration / 2);
+
+    // Connect output and start sound
+    if (this.output) this.noiseEnvelope.connect(this.output);
+    this.noise.start(start)
+
+    if (this.output) this.oscEnvelope.connect(this.output);
     this.osc.start(start)
-  
-    this.osc.stop(start + duration);
+
+    // Stop sounds after duration
     this.noise.stop(start + duration);
+    this.osc.stop(start + duration);
   }
 
   /**
@@ -93,15 +105,15 @@ class Snare {
     volume
   } = {}) => {
     let actualIterations = iterations;
-    
+
     if (trackDuration) actualIterations = (trackDuration - interval) / (interval || 1);
 
     for (let i = 0; i < actualIterations; i++) {
       const start = (i * interval) + delay || delay;
-      this.trigger({start, soundDuration, volume});
+      this.trigger({ start, soundDuration, volume });
     }
 
-    console.info(`Playing ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations*interval*2)} at an interval of ${interval}s`);
+    console.info(`Playing ${this.name} ${actualIterations} times for ${secondsToHHMMSS(trackDuration || iterations * interval * 2)} at an interval of ${interval}s`);
   }
 }
 
